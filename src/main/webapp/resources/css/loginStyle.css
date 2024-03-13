@@ -1,0 +1,30 @@
+@charset "UTF-8";
+	
+	body {
+		height:100vh; position:relative;
+	}
+	
+	.loginPage {
+		z-index:10000; border-style:solid; border-width:1px; border-radius:4px; padding:10px;
+		height: 170px; width: 650px; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+	}
+	.loginPage #loginBox {
+		border-style:dashed; border-width:1px; border-radius:8px; padding:10px;
+		height: 150px; width: 300px; position:relative;
+	}
+	#mbrId, #mbrPwd {
+		width:250px; outline:none; border:1px solid #9f9d9d; padding: 5px 5px;
+		margin:7px;
+	}
+	.loginPage #btnLogin {
+		height:30px; width:120px; display:block; margin:auto;
+	}
+	.loginPage p{
+		height: 20px; width:400px; margin:0px;
+		font-size:smaller; position:absolute; top: 35%; left:81%; transform:translate(-50%, -50%);
+	}
+	.loginPage #btnJoin {
+		height:30px; width:120px;
+		position:absolute; top: 60%; left:75%; transform:translate(-50%, -50%);
+	}
+	

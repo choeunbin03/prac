@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.mappers.ntcFaqQna">
+<select id="list" resultType="com.board.domain.NtcFaqQnaDTO" parameterType="HashMap">
+		SELECT NFQ_SEQ    AS nfqSeq,
+			NFQ_TYPE	  AS nfqType,
+			NFQ_TTL       AS nfqTtl,
+			QSTN_CN       AS qstnCn,
+			ANS_CN   	  AS ansCn,
+			ATCH_FILE_NO  AS atchFileNo,
+			RGTR_ID       AS rgtrId,
+			RGTR_DT       AS rgtrDt,
+			MDFR_ID       AS mdfrId,
+			MDFR_DT       AS mdfrDt
+		FROM TB_NTC_FAQ_QNA
+		WHERE NFQ_TYPE = #{nfqType}
+		ORDER BY NFQ_SEQ DESC
+		LIMIT #{pageDto.strtIndx}, #{pageDto.amount}
+	</select>
+	
+	<select id="maxNfqSeq" resultType="java.lang.Integer">
+		select max(NFQ_SEQ) AS NFQ_SEQ FROM TB_NTC_FAQ_QNA
+	</select>
+	
+	<insert id="regiQstn" parameterType="com.board.domain.NtcFaqQnaDTO">
+		INSERT INTO TB_NTC_FAQ_QNA 
+		( 
+			NFQ_TYPE,
+			NFQ_TTL,
+			QSTN_CN,
+			ANS_YN,
+			RGTR_ID,
+			RGTR_DT,
+			MDFR_ID,
+			MDFR_DT
+		)
+		VALUES(	
+				3,
+				#{nfqTtl},
+				#{qstnCn},
+				'N',
+				#{rgtrId},
+				now(),
+				#{rgtrId},
+				now()
+		)
+	</insert>
+
+	<insert id="regiNtc" parameterType="com.board.domain.NtcFaqQnaDTO">
+		INSERT INTO TB_NTC_FAQ_QNA 
+		( 
+			NFQ_TYPE,
+			NFQ_TTL,
+			ANS_CN,
+			ANS_YN,
+			RGTR_ID,
+			RGTR_DT,
+			MDFR_ID,
+			MDFR_DT
+		)
+		VALUES(	
+				1,
+				#{nfqTtl},
+				#{ansCn},
+				'Y',
+				'관리자',
+				now(),
+				'관리자',
+				now()
+		)
+	</insert>	
+	
+	<insert id="regi" parameterType="com.board.domain.NtcFaqQnaDTO">
+		INSERT INTO TB_NTC_FAQ_QNA 
+		( 
+			NFQ_TYPE,
+			NFQ_TTL,
+			QSTN_CN,
+			ANS_CN,
+			ANS_YN,
+			RGTR_ID,
+			RGTR_DT,
+			MDFR_ID,
+			MDFR_DT
+		)
+		VALUES(	
+				#{nfqType},
+				#{nfqTtl},
+				#{qstnCn},
+				#{ansCn},
+				#{ansYn},
+				#{rgtrId},
+				now(),
+				#{rgtrId},
+				now()
+		)
+	</insert>
+	
+	<select id="view" parameterType="java.lang.Integer" resultType="com.board.domain.NtcFaqQnaDTO">
+		SELECT NFQ_SEQ    AS nfqSeq,
+			NFQ_TYPE	  AS nfqType,
+			NFQ_TTL       AS nfqTtl,
+			QSTN_CN       AS qstnCn,
+			ANS_CN		  AS ansCn,
+			ANS_YN		  AS ansYn,
+			ATCH_FILE_NO  AS atchFileNo,
+			RGTR_ID       AS rgtrId,
+			RGTR_DT       AS rgtrDt,
+			MDFR_ID       AS mdfrId,
+			MDFR_DT       AS mdfrDt
+		FROM	TB_NTC_FAQ_QNA
+		WHERE	NFQ_SEQ = #{nfqSeq}
+	</select>
+
+	<update id="update">
+		UPDATE TB_NTC_FAQ_QNA
+		SET
+			NFQ_TTL = #{nfqTtl},
+			NFQ_CN = #{nfqCn},
+			RGTR_ID = #{rgtrId},
+			MDFR_DT = now()
+		WHERE
+			NFQ_SEQ = #{nfqSeq}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM TB_NTC_FAQ_QNA
+		WHERE
+			NFQ_SEQ = #{nfqSeq}
+	</delete>
+	
+	<select id="checkNfqSptYn" resultType="java.lang.String" parameterType="HashMap">
+		SELECT IFNULL(TB_SPT_INQCNT.NFQ_SPT_YN, "N") 
+		FROM TB_NTC_FAQ_QNA
+		LEFT JOIN TB_SPT_INQCNT 	ON TB_SPT_INQCNT.NFQ_SEQ = TB_NTC_FAQ_QNA.NFQ_SEQ	AND TB_SPT_INQCNT.MBR_ID = #{mbrId}
+		WHERE TB_NTC_FAQ_QNA.NFQ_SEQ = #{nfqSeq}	AND MBR_ID = #{mbrId}
+	</select>
+	
+	<update id="updateNfqSpt">
+		UPDATE TB_NTC_FAQ_QNA
+		SET
+			NFQ_SPT = IFNULL(NFQ_SPT, 0) + 1
+		WHERE
+			NFQ_SEQ = #{nfqSeq}
+	</update>
+	
+	<select id="totalCnt" resultType="java.lang.Integer">
+		SELECT COUNT(NFQ_SEQ) AS CNT 
+		FROM TB_NTC_FAQ_QNA
+	</select>
+	
+	<select id="totalCntByType" resultType="java.lang.Integer" parameterType="HashMap">
+		SELECT COUNT(NFQ_SEQ) AS CNT FROM TB_NTC_FAQ_QNA
+		WHERE NFQ_TYPE = #{nfqType}
+	</select>
+	
+	<select id="srchList" resultType="HashMap" parameterType="HashMap">
+		SELECT NFQ_SEQ    AS nfqSeq,
+			NFQ_TTL       AS nfqTtl,
+			NFQ_CN        AS nfqCn,
+			NFQ_REG_YMD   AS nfqRegYmd,
+			NFQ_INQ_CNT   AS nfqInqCnt,
+			NFQ_SPT       AS nfqSpt,
+			ATCH_FILE_NO  AS atchFileNo,
+			RGTR_ID       AS rgtrId,
+			RGTR_DT       AS rgtrDt,
+			MDFR_ID       AS mdfrId,
+			MDFR_DT       AS mdfrDt
+		FROM TB_NTC_FAQ_QNA
+		WHERE 1=1
+	    <if test='rgtrId != null and rgtrId !="" '>
+	        AND RGTR_ID = #{rgtrId}
+	    </if>
+	    <if test='title != null and title !="" '>
+	        AND NFQ_TTL LIKE CONCAT('%' ,#{title}, '%')
+	    </if>
+		ORDER BY NFQ_SEQ DESC
+		LIMIT #{pageDto.strtIndx}, #{pageDto.amount}
+	</select>
+	
+	<select id="mngList" resultType="com.board.domain.NtcFaqQnaDTO" parameterType="com.board.domain.PageDTO">
+		SELECT NFQ_SEQ    AS nfqSeq,
+			NFQ_TYPE	  AS nfqType,
+			NFQ_TTL       AS nfqTtl,
+			QSTN_CN       AS qstnCn,
+			ANS_YN   	  AS ansYn,
+			RGTR_ID       AS rgtrId,
+			RGTR_DT       AS rgtrDt,
+			MDFR_ID       AS mdfrId,
+			MDFR_DT       AS mdfrDt
+		FROM TB_NTC_FAQ_QNA
+		ORDER BY NFQ_SEQ DESC
+		LIMIT #{strtIndx}, #{amount}
+	</select>
+	
+</mapper>

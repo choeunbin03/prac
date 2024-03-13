@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.mappers.board">
+	<select id="list" resultType="com.board.domain.BoardDTO" parameterType="com.board.domain.PageDTO">
+		SELECT BBS_SEQ    AS bbsSeq,
+			BBS_TTL       AS bbsTtl,
+			BBS_CN        AS bbsCn,
+			BBS_REG_YMD   AS bbsRegYmd,
+			BBS_INQ_CNT AS bbsInqCnt,
+			BBS_SPT       AS bbsSpt,
+			ATCH_FILE_NO  AS atchFileNo,
+			RGTR_ID       AS rgtrId,
+			RGTR_DT       AS rgtrDt,
+			MDFR_ID       AS mdfrId,
+			MDFR_DT       AS mdfrDt
+		FROM TB_BBS
+		ORDER BY BBS_SEQ DESC
+		LIMIT #{strtIndx}, #{amount}
+	</select>
+	
+	<select id="maxBbsSeq" resultType="java.lang.Integer">
+		select max(BBS_SEQ) AS BBS_SEQ FROM TB_BBS
+	</select>
+	
+	<insert id="regi" parameterType="com.board.domain.BoardDTO">
+		INSERT INTO TB_BBS 
+		( 
+			BBS_SEQ,
+			BBS_TTL,
+			BBS_CN,
+			BBS_REG_YMD,
+			BBS_INQ_CNT,
+			RGTR_ID,
+			RGTR_DT,
+			MDFR_ID,
+			MDFR_DT
+		)
+		VALUES(	#{bbsSeq},
+				#{bbsTtl},
+				#{bbsCn},
+				now(),
+				0,
+				#{rgtrId},
+				now(),
+				#{rgtrId},
+				now()
+		)
+	</insert>
+	
+	<select id="view" resultType="com.board.domain.BoardDTO">
+		SELECT BBS_SEQ    AS bbsSeq,
+			BBS_TTL       AS bbsTtl,
+			BBS_CN        AS bbsCn,
+			BBS_REG_YMD   AS bbsRegYmd,
+			BBS_INQ_CNT AS bbsInqCnt,
+			BBS_SPT       AS bbsSpt,
+			ATCH_FILE_NO  AS atchFileNo,
+			RGTR_ID       AS rgtrId,
+			RGTR_DT       AS rgtrDt,
+			MDFR_ID       AS mdfrId,
+			MDFR_DT       AS mdfrDt
+		FROM	TB_BBS
+		WHERE	BBS_SEQ = #{bbsSeq}
+	</select>
+	
+	<update id="updateBbsInqCnt">
+		UPDATE TB_BBS
+		SET
+			BBS_INQ_CNT = BBS_INQ_CNT + 1
+		WHERE
+			BBS_SEQ = #{bbsSeq}
+	</update>
+	
+	<update id="update">
+		UPDATE TB_BBS
+		SET
+			BBS_TTL = #{bbsTtl},
+			BBS_CN = #{bbsCn},
+			RGTR_ID = #{rgtrId},
+			MDFR_DT = now()
+		WHERE
+			BBS_SEQ = #{bbsSeq}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM TB_BBS
+		WHERE
+			BBS_SEQ = #{bbsSeq}
+	</delete>
+	
+	<select id="checkBbsSptYn" resultType="java.lang.String" parameterType="HashMap">
+		SELECT IFNULL(TB_SPT_INQCNT.BBS_SPT_YN, "N") 
+		FROM TB_BBS
+		LEFT JOIN TB_SPT_INQCNT 	ON TB_SPT_INQCNT.BBS_SEQ = TB_BBS.BBS_SEQ	AND TB_SPT_INQCNT.MBR_ID = #{mbrId}
+		WHERE TB_BBS.BBS_SEQ = #{bbsSeq}	AND MBR_ID = #{mbrId}
+	</select>
+	
+	<update id="updateBbsSpt">
+		UPDATE TB_BBS
+		SET
+			BBS_SPT = IFNULL(BBS_SPT, 0) + 1
+		WHERE
+			BBS_SEQ = #{bbsSeq}
+	</update>
+	
+	<select id="totalCnt" resultType="java.lang.Integer">
+		SELECT COUNT(BBS_SEQ) AS CNT FROM TB_BBS
+	</select>
+	
+	<select id="srchBbsTotalCnt" resultType="java.lang.Integer" parameterType="HashMap">
+		SELECT COUNT(BBS_SEQ) AS CNT FROM TB_BBS
+		<if test='rgtrId != null and rgtrId !="" '>
+	       	WHERE RGTR_ID = #{rgtrId}
+	    </if>
+	    <if test='title != null and title !="" '>
+	        WHERE BBS_TTL LIKE CONCAT('%' ,#{title}, '%')
+	    </if>
+	</select>
+	
+	<select id="srchList" resultType="HashMap" parameterType="HashMap">
+		SELECT BBS_SEQ    AS bbsSeq,
+			BBS_TTL       AS bbsTtl,
+			BBS_CN        AS bbsCn,
+			BBS_REG_YMD   AS bbsRegYmd,
+			BBS_INQ_CNT   AS bbsInqCnt,
+			BBS_SPT       AS bbsSpt,
+			ATCH_FILE_NO  AS atchFileNo,
+			RGTR_ID       AS rgtrId,
+			RGTR_DT       AS rgtrDt,
+			MDFR_ID       AS mdfrId,
+			MDFR_DT       AS mdfrDt
+		FROM TB_BBS
+		WHERE 1=1
+	    <if test='rgtrId != null and rgtrId !="" '>
+	        AND RGTR_ID = #{rgtrId}
+	    </if>
+	    <if test='title != null and title !="" '>
+	        AND BBS_TTL LIKE CONCAT('%' ,#{title}, '%')
+	    </if>
+		ORDER BY BBS_SEQ DESC
+		LIMIT #{pageDto.strtIndx}, #{pageDto.amount}
+	</select>
+	
+</mapper>

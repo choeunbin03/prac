@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.mappers.sptInqCnt">
+	<insert id="insertBbsSpt" parameterType="HashMap">
+		INSERT INTO TB_SPT_INQ
+		(
+			BBS_SEQ,
+			MBR_ID,
+			BBS_SPT_YN,
+			RGTR_ID,
+			RGTR_DT,
+			MDFR_ID,
+			MDFR_DT
+		)
+		VALUES( #{bbsSeq},
+				#{mbrId} ,
+				'Y' ,
+				#{mbrId} ,
+				now(),
+				#{mbrId} ,
+				now()		
+		)
+		ON DUPLICATE KEY UPDATE
+		BBS_SPT_YN  = VALUES(BBS_SPT_YN),
+		MDFR_ID     = VALUES(MDFR_ID),
+		MDFR_DT     = VALUES(MDFR_DT)
+		
+	</insert>
+
+	
+</mapper>

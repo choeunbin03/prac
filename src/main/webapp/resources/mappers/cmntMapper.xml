@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.mappers.cmnt">
+	<select id="list" parameterType="com.board.domain.CmntDTO" resultType="com.board.domain.CmntDTO">
+		SELECT BBS_SEQ    AS bbsSeq,
+			CMNT_SEQ      AS cmntSeq,
+			CMNT_CN       AS cmntCn,
+			RGTR_ID       AS rgtrId,
+			RGTR_DT       AS rgtrDt,
+			MDFR_ID       AS mdfrId,
+			MDFR_DT       AS mdfrDt
+		FROM TB_CMNT
+		WHERE BBS_SEQ = #{bbsSeq}
+	</select>
+	
+	<select id="maxCmntSeq" parameterType="com.board.domain.CmntDTO" resultType="java.lang.Integer">
+		SELECT MAX(CMNT_SEQ) CMNT_SEQ
+		FROM (
+			SELECT MAX(IFNULL(CMNT_SEQ,0)) AS CMNT_SEQ
+			FROM TB_CMNT
+			WHERE BBS_SEQ = #{bbsSeq}
+			GROUP BY BBS_SEQ
+			
+			UNION ALL
+			SELECT 0 FROM DUAL
+		) A
+		
+		
+	</select>
+	
+	<insert id="regiCmnt" parameterType="com.board.domain.CmntDTO">
+		INSERT INTO TB_CMNT
+		( 
+			BBS_SEQ,
+			CMNT_SEQ,
+			CMNT_CN,
+			RGTR_ID,
+			RGTR_DT,
+			MDFR_ID,
+			MDFR_DT
+		)
+		VALUES(	#{bbsSeq},
+				#{cmntSeq},
+				#{cmntCn},
+				#{rgtrId},
+				now(),
+				'aaa',
+				now()
+		)
+	</insert>
+	
+	<select id="view" resultType="com.board.domain.BoardDTO">
+		SELECT BBS_SEQ    AS bbsSeq,
+			BBS_TTL       AS bbsTtl,
+			BBS_CN        AS bbsCn,
+			BBS_REG_YMD   AS bbsRegYmd,
+			BBS_INQ_CNT AS bbsInqCnt,
+			BBS_SPT       AS bbsSpt,
+			ATCH_FILE_NO  AS atchFileNo,
+			RGTR_ID       AS rgtrId,
+			RGTR_DT       AS rgtrDt,
+			MDFR_ID       AS mdfrId,
+			MDFR_DT       AS mdfrDt
+		FROM	TB_BBS
+		WHERE	BBS_SEQ = #{bbsSeq}
+	</select>
+	
+	<update id="updateBbsInqCnt">
+		UPDATE TB_BBS
+		SET
+			BBS_INQ_CNT = BBS_INQ_CNT + 1
+		WHERE
+			BBS_SEQ = #{bbsSeq}
+	</update>
+	
+	<update id="update">
+		UPDATE TB_BBS
+		SET
+			BBS_TTL = #{bbsTtl},
+			BBS_CN = #{bbsCn}
+		WHERE
+			BBS_SEQ = #{bbsSeq}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM TB_BBS
+		WHERE
+			BBS_SEQ = #{bbsSeq}
+	</delete>
+
+</mapper>

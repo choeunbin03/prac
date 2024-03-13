@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.mappers.member">
+
+	<select id="login" resultType="com.board.domain.MemberDTO">
+		SELECT	MBR_ID AS mbrId,
+				MBR_PWD AS mbrPwd
+		FROM	TB_MBR
+		WHERE	MBR_ID = #{mbrId}
+			AND MBR_PWD = #{mbrPwd}
+	</select>
+	
+	<insert id="join" parameterType="com.board.domain.MemberDTO">
+		INSERT INTO TB_MBR
+		(
+			MBR_ID,
+			MBR_NM,
+			MBR_PWD,
+			RGTR_ID,
+			RGTR_DT,
+			MDFR_ID,
+			MDFR_DT
+		)
+		VALUES(
+			#{mbrId},
+			#{mbrNm},
+			#{mbrPwd},
+			#{mbrId},
+			now(),
+			#{mbrId},
+			now()
+		)
+	</insert>
+	
+</mapper>

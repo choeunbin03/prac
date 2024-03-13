@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.mappers.bookmark">
+	<insert id="saveBmk" parameterType="HashMap">
+		INSERT INTO TB_BOOKMARK
+		( 
+			MBR_ID,
+			BMK_URL,
+			BMK_TTL,
+			RGTR_ID,
+			RGTR_DT,
+			MDFR_ID,
+			MDFR_DT
+		)
+		VALUES(	#{mbrId},
+				#{bmkUrl},
+				#{bmkUrl},
+				#{mbrId},
+				now(),
+				#{mbrId},
+				now()
+		)
+	</insert>
+	
+	<select id="list" resultType="com.board.domain.BookmarkDTO" parameterType="com.board.domain.BookmarkDTO">
+		SELECT	
+			BMK_URL AS bmkUrl,
+			BMK_TTL	AS bmkTtl
+		FROM TB_BOOKMARK
+		WHERE MBR_ID = #{mbrId} 
+	</select>
+	
+	<select id="getBmkList" resultType="com.board.domain.BookmarkDTO" parameterType="java.lang.String">
+		SELECT	
+			BMK_URL AS bmkUrl,
+			BMK_TTL	AS bmkTtl
+		FROM TB_BOOKMARK
+		WHERE MBR_ID = #{mbrId} 
+	</select>
+</mapper>
+	
